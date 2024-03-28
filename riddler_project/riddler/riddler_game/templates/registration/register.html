@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Registrace
+{% endblock %}
+
+{% block content %}
+    <div id="intro-container">
+    <h1>Registrace</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Registrovat</button>
+    </form>
+</div>
+{% endblock %}

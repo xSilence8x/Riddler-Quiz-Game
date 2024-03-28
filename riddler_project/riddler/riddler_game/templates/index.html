@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+Kvíz
+{% endblock %}
+
+{% block content %}       
+<div id="intro-container">
+    <h1>Vítejte v kvízu!</h1>
+    <p style="font-size: 20px;">
+        Dostaneš časově omezených 12 hádanek a pouze 2 pokusy. <br>
+        U každé hádanky je možnost nápovědy, ovšem pozor, při kliknutí na ní, přijdete o 5 vteřin svého času. <br>
+        Pro úspěšné ukončení hry musíš mít alespoň 80%. <br>
+        Po absolvování této hranice, dostaneš za odměnu finální souřadnice.
+    </p>
+    {% if not user.is_authenticated %}
+    <p>
+        Ještě jsi s námi nehrál? <br />
+        <a href="{% url 'register' %}">Zaregistruj se.</a>
+    </p>
+    <p>
+        Do hry se přihlásíš <a href="{% url 'login' %}">tady</a>.
+    </p>
+    {% endif %}
+    {% if user.is_authenticated %}
+    <p>
+        Jsi přihlášen jako <strong>{{ user.username }}</strong>. <br>
+        Nejsi to ty?
+    </p>
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="nav-link text-light">Odhlásit</button>
+    </form>
+    
+    <p>
+
+            <button method="post" onclick="redirectToQuiz()">Spustit kvíz</button>
+
+    </p>
+    {% endif %}
+</div>
+
+<script>
+    function redirectToQuiz() {
+        var token = '{{ expected_token }}';
+        window.location.href = '/kviz/?token=' + token;
+    }
+</script>
+{% endblock %}

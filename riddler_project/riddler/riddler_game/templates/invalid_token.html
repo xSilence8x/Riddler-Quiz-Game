@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+Neplatný token
+{% endblock %}
+
+{% block content %} 
+<p>
+    Neplatný token. Nepodváděj. <br>
+    Vrať se na <a href="{% url 'home' %}">hlavní stránku</a>.
+</p>
+
+{% endblock %}

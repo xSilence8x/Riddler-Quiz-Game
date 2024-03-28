@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+Kvíz
+{% endblock %}
+
+{% block content %}   
+{% if user.is_authenticated%}    
+
+    <div class="container ">
+    
+    <div align="right " id="displaytimer"><b>Timer: 0 seconds</b></div>
+    
+    <form method='post' action=''>
+        {% csrf_token %}
+        {% for q in questions %}
+        <div class="form-group">
+            <label for="question">{{ q.question }}</label>
+            <input type="text" name="user_answer_{{ q.id }}" class="form-control" required autocomplete="off">
+        </div>
+        
+        <button type="button" class="showHintBtn" data-question-id="{{ q.id }}">Show Hint</button>
+        <div class="hint" id="hint_{{ q.id }}" style="display: none;">{{ q.hint }}</div>
+        <br>
+        {% endfor %}
+        <br>
+        <input id='timer' type='hidden' name="timer" value="">
+        <br>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+        {% block script %}
+            <script>
+                window.onbeforeunload = function() {
+                    // Set expected_token session key to None
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", "{% url 'invalidate_token' %}", true);
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                    xhr.send();
+                };
+                
+                document.querySelectorAll('.showHintBtn').forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        var questionId = this.getAttribute('data-question-id');
+                        var hintElement = document.getElementById('hint_' + questionId);
+                        hintElement.style.display = 'block';
+                    });
+                });
+                
+                const timer=document.getElementById('displaytimer')
+                const inputtag = document.getElementById('timer')
+    
+                t=0
+                setInterval(()=>{
+                    t+=1
+                    timer.innerHTML ="<b>Timer: " +t+" seconds</b>"
+                    inputtag.value = t
+                },1000)
+            
+
+            </script>
+        {% endblock script %}
+    
+    </div>
+{% else %}
+    <div class="container ">
+        <p>
+            Pro spuštění kvízu se musíš <a href="{% url 'login' %}">přihlásit</a>!
+        <p>
+        <p>
+            Nemáš účet? Nevadí. <a href="{% url 'register' %}">Zaregistruj se.</a>
+        </p>
+    </div>
+{% endif %}
+{% endblock %}

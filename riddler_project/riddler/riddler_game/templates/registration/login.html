@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Přihlášení
+{% endblock %}
+
+{% block content %}
+    <div id="intro-container">
+    <h1>Přihlásit do kvízu</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Přihlásit</button>
+    </form>
+</div>
+{% endblock %}

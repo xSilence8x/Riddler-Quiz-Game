@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+Výsledek
+{% endblock %}
+
+{% block content %}
+ 
+<div class="intro-container ">
+        
+    <div class="card-columns" style="padding: 10px; margin: 20px;">
+        <div class="card" align="centre " style="width: 32rem; border:5px black solid">
+            <div class="card-body">
+                <p class="card-text">Skóre: {{percent}}%</p>
+                <p class="card-text">Čas kvízu: {{time}} seconds</p>
+                <p class="card-text">Správné odpovědi: {{correct}}</p>
+                <p class="card-text">Špatné odpovědi: {{wrong}}</p>
+                <p class="card-text">Celkový počet otázek: {{total}}</p>
+                <h5>Nebyl jsi úspěšný? Hrej znovu.</h5>
+                <p>
+                    <p>
+
+                        <button method="post" onclick="redirectToQuiz()">Spustit kvíz</button>
+            
+                </p>
+                </p>
+            </div>
+        </div>
+    </div>
+ 
+</div>
+<script>
+    function redirectToQuiz() {
+        var token = '{{ expected_token }}';
+        window.location.href = '/kviz/?token=' + token;
+    }
+</script>
+{% endblock %}
