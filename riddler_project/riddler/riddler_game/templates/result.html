@@ -18,13 +18,19 @@ Výsledek
                 <p class="card-text">Správné odpovědi: {{correct}}</p>
                 <p class="card-text">Špatné odpovědi: {{wrong}}</p>
                 <p class="card-text">Celkový počet otázek: {{total}}</p>
-                <h5>Nebyl jsi úspěšný? Hrej znovu.</h5>
+                {% if percent >= 83 %}
                 <p>
-                    <p>
-
-                        <button method="post" onclick="redirectToQuiz()">Spustit kvíz</button>
-            
+                    {{ coords }}
                 </p>
+                
+                {% else %}
+                    <h5>Nebyl jsi úspěšný? Hrej znovu.</h5>
+                    <p>
+                        <button method="post" onclick="redirectToQuiz()">Spustit kvíz</button>
+                    </p>
+                {% endif %}
+                <p>
+                    <a href="{% url 'home' %}">Zpět na hlavní stránku</a>
                 </p>
             </div>
         </div>
