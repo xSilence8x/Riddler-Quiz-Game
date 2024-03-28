@@ -48,7 +48,7 @@ class KvizView(View):
             return render(request, "invalid_token.html")
 
         all_questions = list(Question.objects.all())
-        questions = random.sample(all_questions, k=min(len(all_questions), 1))  # Adjust the number of questions as needed
+        questions = random.sample(all_questions, k=min(len(all_questions), 2))  # Adjust the number of questions as needed
         context = {'questions': questions
                    }
 

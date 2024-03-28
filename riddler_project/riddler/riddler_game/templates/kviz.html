@@ -16,30 +16,61 @@ Kvíz
     <form method='post' action=''>
         {% csrf_token %}
         {% for q in questions %}
-        <div class="form-group">
-            <label for="question">{{ q.question }}</label>
-            <input type="text" name="user_answer_{{ q.id }}" class="form-control" required autocomplete="off">
-        </div>
+        <div class="question{% if forloop.first %} active{% endif %}" id="question_{{ q.id }}">
+            <div class="form-group">
+                <label for="question">{{ q.question }}</label>
+                <input type="text" name="user_answer_{{ q.id }}" class="form-control" required autocomplete="off">
+            </div>
         
-        <button type="button" class="showHintBtn" data-question-id="{{ q.id }}">Show Hint</button>
-        <div class="hint" id="hint_{{ q.id }}" style="display: none;">{{ q.hint }}</div>
-        <br>
+            <button type="button" class="showHintBtn" data-question-id="{{ q.id }}">Nápověda</button>
+            <div class="hint" id="hint_{{ q.id }}" style="display: none;">{{ q.hint }}</div>
+            <br>
+        </div>
         {% endfor %}
         <br>
         <input id='timer' type='hidden' name="timer" value="">
         <br>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-primary" id="nextButton">Další hádanka</button>
+        <button type="submit" class="btn btn-primary" id="submitButton" style="display: none;">Poslat odpovědi</button>
     </form>
-        {% block script %}
-            <script>
-                window.onbeforeunload = function() {
-                    // Set expected_token session key to None
-                    var xhr = new XMLHttpRequest();
-                    xhr.open("POST", "{% url 'invalidate_token' %}", true);
-                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
-                    xhr.send();
-                };
-                
+    <div class="container">
+        <p>
+            <a href="{% url 'home' %}">Ukončit kvíz</a>
+        </p>
+    </div>
+    {% block script %}
+        <script>
+            window.onbeforeunload = function() {
+                // Set expected_token session key to None
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "{% url 'invalid_token' %}", true);
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                xhr.send();
+            };
+            
+            document.addEventListener('DOMContentLoaded', function() {
+                // Initially hide all question elements
+                const questions = document.querySelectorAll('.question');
+                questions.forEach(function(question) {
+                    question.style.display = 'none';
+                });
+            
+                // Show the first question initially
+                const firstQuestion = document.querySelector('.question.active');
+                if (firstQuestion) {
+                    firstQuestion.style.display = 'block';
+                }
+            
+                // Function to toggle visibility of questions
+                function toggleQuestions(activeQuestion) {
+                    questions.forEach(function(question) {
+                        if (question === activeQuestion) {
+                            question.style.display = 'block';
+                        } else {
+                            question.style.display = 'none';
+                        }
+                    });
+                }
                 document.querySelectorAll('.showHintBtn').forEach(function(button) {
                     button.addEventListener('click', function() {
                         var questionId = this.getAttribute('data-question-id');
@@ -47,20 +78,45 @@ Kvíz
                         hintElement.style.display = 'block';
                     });
                 });
-                
-                const timer=document.getElementById('displaytimer')
-                const inputtag = document.getElementById('timer')
-    
-                t=0
-                setInterval(()=>{
-                    t+=1
-                    timer.innerHTML ="<b>Timer: " +t+" seconds</b>"
-                    inputtag.value = t
-                },1000)
             
+                // Event listener for the next button
+                const nextButton = document.getElementById('nextButton');
+                nextButton.addEventListener('click', function() {
+                    const activeQuestion = document.querySelector('.question.active');
+                    const nextQuestion = activeQuestion.nextElementSibling;
 
-            </script>
-        {% endblock script %}
+                    // Check if the input field of the active question is empty
+                    const inputField = activeQuestion.querySelector('input[type="text"]');
+                    if (inputField && inputField.value.trim() === '') {
+                        alert('Musíš zadat odpověď!');
+                        return; // Stop execution if input is empty
+                    }
+                    if (nextQuestion && nextQuestion.classList.contains('question')) {
+                        activeQuestion.classList.remove('active');
+                        nextQuestion.classList.add('active');
+                        toggleQuestions(nextQuestion);
+
+                        if (!nextQuestion.nextElementSibling || !nextQuestion.nextElementSibling.classList.contains('question')) {
+                            nextButton.style.display = 'none'; // Hide next button
+                            document.getElementById('submitButton').style.display = 'block'; // Show submit button
+                        }
+                    }
+                });
+            });
+            
+            const timer=document.getElementById('displaytimer')
+            const inputtag = document.getElementById('timer')
+
+            t=0
+            setInterval(()=>{
+                t+=1
+                timer.innerHTML ="<b>Timer: " +t+" seconds</b>"
+                inputtag.value = t
+            },1000)
+        
+
+        </script>
+    {% endblock script %}
     
     </div>
 {% else %}
