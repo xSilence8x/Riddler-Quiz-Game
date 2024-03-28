@@ -8,39 +8,47 @@ Výsledek
 
 {% block content %}
  
-<div class="intro-container ">
-        
-    <div class="card-columns" style="padding: 10px; margin: 20px;">
-        <div class="card" align="centre " style="width: 32rem; border:5px black solid">
-            <div class="card-body">
-                <p class="card-text">Skóre: {{percent}}%</p>
-                <p class="card-text">Čas kvízu: {{time}} seconds</p>
-                <p class="card-text">Správné odpovědi: {{correct}}</p>
-                <p class="card-text">Špatné odpovědi: {{wrong}}</p>
-                <p class="card-text">Celkový počet otázek: {{total}}</p>
-                {% if percent >= 83 %}
-                <p>
-                    {{ coords }}
-                </p>
-                
-                {% else %}
-                    <h5>Nebyl jsi úspěšný? Hrej znovu.</h5>
+{% if user.is_authenticated %}
+    {% if error_timer_message %}
+    <div class="intro-container ">
+        <p>{{ error_timer_message }}</p>
+    </div>
+    {% else %}
+    <div class="intro-container ">
+            
+        <div class="card-columns" style="padding: 10px; margin: 20px;">
+            <div class="card" align="centre " style="width: 32rem; border:5px black solid">
+                <div class="card-body">
+                    <p class="card-text">Skóre: {{percent}}%</p>
+                    <p class="card-text">Čas kvízu: {{time}} seconds</p>
+                    <p class="card-text">Správné odpovědi: {{correct}}</p>
+                    <p class="card-text">Špatné odpovědi: {{wrong}}</p>
+                    <p class="card-text">Celkový počet otázek: {{total}}</p>
+                    {% if percent >= 83 %}
                     <p>
-                        <button method="post" onclick="redirectToQuiz()">Spustit kvíz</button>
+                        {{ coords }}
                     </p>
-                {% endif %}
-                <p>
-                    <a href="{% url 'home' %}">Zpět na hlavní stránku</a>
-                </p>
+                    
+                    {% else %}
+                        <h5>Nebyl jsi úspěšný? Hrej znovu.</h5>
+                        <p>
+                            <button method="post" onclick="redirectToQuiz()">Spustit kvíz</button>
+                        </p>
+                    {% endif %}
+                    <p>
+                        <a href="{% url 'home' %}">Zpět na hlavní stránku</a>
+                    </p>
+                </div>
             </div>
         </div>
+    
     </div>
- 
-</div>
-<script>
-    function redirectToQuiz() {
-        var token = '{{ expected_token }}';
-        window.location.href = '/kviz/?token=' + token;
-    }
-</script>
+    <script>
+        function redirectToQuiz() {
+            var token = '{{ expected_token }}';
+            window.location.href = '/kviz/?token=' + token;
+        }
+    </script>
+    {% endif %}
+{% endif %}
 {% endblock %}

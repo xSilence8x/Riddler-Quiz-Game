@@ -18,8 +18,9 @@ class QuizResult(models.Model):
     percent = models.IntegerField(default=0)
     score = models.IntegerField()
     time = models.IntegerField()
+    django_time = models.FloatField(default=0)
     
 
     def __str__(self):
         formatted_date_taken = self.date_taken.strftime("%Y-%m-%d, %H:%M")
-        return f"{self.user}, {self.percent} %, {self.time} s, {formatted_date_taken}"
+        return f"{self.user}, {self.percent} %, JS čas: {self.time} s, Django čas: {self.django_time}, {formatted_date_taken}"

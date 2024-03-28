@@ -18,8 +18,8 @@ Kvíz
         {% for q in questions %}
         <div class="question{% if forloop.first %} active{% endif %}" id="question_{{ q.id }}">
             <div class="form-group">
-                <label for="question">{{ q.question }}</label>
-                <input type="text" name="user_answer_{{ q.id }}" class="form-control" required autocomplete="off">
+                <label for="user_answer_{{ q.id }}">{{ q.question }}</label>
+                <input type="text" id="user_answer_{{ q.id }}" name="user_answer_{{ q.id }}" class="form-control" required autocomplete="off">
             </div>
         
             <button type="button" class="showHintBtn" data-question-id="{{ q.id }}">Nápověda</button>
@@ -40,13 +40,14 @@ Kvíz
     </div>
     {% block script %}
         <script>
-            window.onbeforeunload = function() {
+            {% comment %} window.onbeforeunload = function() {
                 // Set expected_token session key to None
                 var xhr = new XMLHttpRequest();
                 xhr.open("POST", "{% url 'invalid_token' %}", true);
                 xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
                 xhr.send();
-            };
+            }; {% endcomment %}
+            
             
             document.addEventListener('DOMContentLoaded', function() {
                 // Initially hide all question elements
