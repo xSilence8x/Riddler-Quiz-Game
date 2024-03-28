@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.views.generic import View
 from .forms import SignUpForm, LoginForm
-from django.contrib.auth.views import LoginView, PasswordResetView
+from django.contrib.auth.views import LoginView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from django.contrib.auth.forms import SetPasswordForm
 from django.views import generic
 from .models import Question, QuizResult
 from django.urls import reverse_lazy
@@ -41,11 +42,24 @@ class UserLoginView(LoginView):
 
 
 class CustomPasswordResetView(PasswordResetView):
-    template_name = 'password_reset.html'  # Specify your custom template path
+    template_name = 'registration/password_reset.html'  # Specify your custom template path
     email_template_name = 'registration/password_reset_email.html'  # Specify your custom email template path
     success_url = reverse_lazy('password_reset_done')  # URL to redirect to after a successful password reset request
- 
 
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = "registration/password_reset_done.html"
+
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = "registration/password_reset_confirm.html"
+    form_class = SetPasswordForm
+    success_url = reverse_lazy('password_reset_complete')
+
+
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = "registration/password_reset_complete.html"
+    
 
 def generate_token():
     return str(uuid.uuid4())
@@ -104,7 +118,7 @@ class KvizView(View):
             context["coords"] = ""
 
         date_taken = timezone.now() + timedelta(hours=1)
-        quiz_result = QuizResult(user=request.user, score=score, time=context["time"], date_taken=date_taken)
+        quiz_result = QuizResult(user=request.user, percent=percent, score=score, time=context["time"], date_taken=date_taken)
         quiz_result.save()
 
         session_key = request.GET.get('token')
