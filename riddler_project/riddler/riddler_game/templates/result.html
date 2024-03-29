@@ -9,9 +9,9 @@ Výsledek
 {% block content %}
  
 {% if user.is_authenticated %}
-    {% if error_timer_message %}
+    {% if error_time_message %}
     <div class="intro-container ">
-        <p>{{ error_timer_message }}</p>
+        <p>{{ error_time_message }}</p>
     </div>
     {% else %}
     <div class="intro-container ">
@@ -30,10 +30,22 @@ Výsledek
                     </p>
                     
                     {% else %}
-                        <h5>Nebyl jsi úspěšný? Hrej znovu.</h5>
-                        <p>
-                            <button method="post" onclick="redirectToQuiz()">Spustit kvíz</button>
-                        </p>
+                        {% if recent_attempts_message %}
+                            <p>
+                                {{ recent_attempts_message }}
+                            </p>
+                        {% else %}
+                            <h5>Nebyl jsi úspěšný? Hrej znovu.</h5>
+                            <p>
+                                <button method="post" onclick="redirectToQuiz()">Spustit kvíz</button>
+                            </p>
+                            <script>
+                                function redirectToQuiz() {
+                                    var token = '{{ expected_token }}';
+                                    window.location.href = '/kviz/?token=' + token;
+                                }
+                            </script>
+                        {% endif %}
                     {% endif %}
                     <p>
                         <a href="{% url 'home' %}">Zpět na hlavní stránku</a>
@@ -43,12 +55,7 @@ Výsledek
         </div>
     
     </div>
-    <script>
-        function redirectToQuiz() {
-            var token = '{{ expected_token }}';
-            window.location.href = '/kviz/?token=' + token;
-        }
-    </script>
+    
     {% endif %}
 {% endif %}
 {% endblock %}

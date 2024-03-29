@@ -33,19 +33,34 @@ Kvíz
         {% csrf_token %}
         <button type="submit" class="nav-link text-light">Odhlásit</button>
     </form>
-    
-    <p>
+        {% if timer_tamper_message %}
+            <p>
+                {{ timer_tamper_message }}
+            </p>
+        {% else %}
+            {% if recent_attempts_message %}
+                <p>
+                    {{ recent_attempts_message }}
+                </p>
 
-            <button method="post" onclick="redirectToQuiz()">Spustit kvíz</button>
+            {% else %}
+            
+            
+                <p>
 
-    </p>
+                        <button method="post" onclick="redirectToQuiz()">Spustit kvíz</button>
+
+                </p>
+                <script>
+                    function redirectToQuiz() {
+                        var token = '{{ expected_token }}';
+                        window.location.href = '/kviz/?token=' + token;
+                    }
+                </script>
+            {% endif %}
+        {% endif %}
     {% endif %}
 </div>
 
-<script>
-    function redirectToQuiz() {
-        var token = '{{ expected_token }}';
-        window.location.href = '/kviz/?token=' + token;
-    }
-</script>
+
 {% endblock %}

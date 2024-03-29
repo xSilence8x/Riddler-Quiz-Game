@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import View
 from .forms import SignUpForm, LoginForm
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
@@ -15,16 +15,39 @@ from django.contrib.auth.forms import PasswordResetForm
 from datetime import datetime, timedelta, timezone
 
 
-
 class HomeView(View):
     template_name = "index.html"
 
     def get(self, request, *args, **kwargs):
-        expected_token = generate_token()
-        request.session['expected_token'] = expected_token
-        print(expected_token)
-        context = {'expected_token': expected_token}
-        return render(request, self.template_name, context)
+        context = {"context":"context"}
+
+        # testing
+        two_min_ago = tz.now() + timedelta(hours=1) - timedelta(minutes=4)
+        print(f"now {tz.now()}, 2 mn ago {two_min_ago}")
+
+        # time zone +1 hour
+        twenty_four_hours_ago = tz.now() + timedelta(hours=1) - timedelta(hours=24)
+
+        # change from two_min_ago to desired time
+        recent_attempts = QuizResult.objects.filter(user=request.user.id, date_taken__gte=two_min_ago)
+        last_quiz_taken = QuizResult.objects.filter(user=request.user.id, date_taken__gte=two_min_ago)
+        print(last_quiz_taken)
+        if last_quiz_taken:
+            last_quiz_takenn = last_quiz_taken.order_by("-date_taken")
+            js_time = last_quiz_takenn[0].time
+            django_time = last_quiz_takenn[0].django_time
+            subtraction = abs(django_time - js_time) 
+            if subtraction > 10:
+                context["timer_tamper_message"] = "Zablokovaný přístup na 24 hod. Zásah do časovače."
+
+        if len(recent_attempts) < 2:
+            expected_token = generate_token()
+            request.session['expected_token'] = expected_token
+            context['expected_token'] = expected_token
+            return render(request, self.template_name, context)
+        else:
+            context["recent_attempts_message"] = "Počet pokusů za 24 hod přesáhl limit."
+            return render(request, self.template_name, context)
        
 
 class UserRegisterView(generic.CreateView):
@@ -133,8 +156,20 @@ class KvizView(View):
             if percent > 83:
                 context["coords"] = coords
             else:
-                context["coords"] = ""
+                # time zone +1 hour
+                twenty_four_hours_ago = tz.now() + timedelta(hours=1) - timedelta(hours=24)
+                recent_attempts = QuizResult.objects.filter(user=request.user.id, date_taken__gte=twenty_four_hours_ago)
+                if len(recent_attempts) < 1:
+                    expected_token = generate_token()
+                    request.session['expected_token'] = expected_token
+                    context['expected_token'] = expected_token
+                else:
+                    context["recent_attempts_message"] = "Počet pokusů za 24 hod přesáhl limit."
+                    context["coords"] = ""
         else:
+            time_now = datetime.now()
+            time_now_str = time_now.strftime("%Y-%m-%d %H:%M:%S")
+            request.session['timer_tampering_attempt'] = time_now_str
             context["error_time_message"] = "Hodnota času serveru neodpovídá povolené odchylce časovače!"
 
         date_taken = tz.now() + timedelta(hours=1)
@@ -156,10 +191,10 @@ class KvizView(View):
             except Session.DoesNotExist:
                 pass  # Session not found, no need to delete
 
-        expected_token = generate_token()
-        request.session['expected_token'] = expected_token
-        print(expected_token)
-        context['expected_token']=expected_token
+        # expected_token = generate_token()
+        # request.session['expected_token'] = expected_token
+        # print(expected_token)
+        # context['expected_token']=expected_token
         return render(request, 'result.html', context)
 
 
