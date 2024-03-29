@@ -14,7 +14,7 @@ class TimerTamperingMiddleware:
             start_time = datetime.strptime(start_time_str, "%Y-%m-%d %H:%M:%S")
 
             # modify time for blocking access
-            expected_end_time = start_time + timedelta(minutes=2)
+            expected_end_time = start_time + timedelta(minutes=1)
             print(f"expected{expected_end_time}")
             if datetime.now() < expected_end_time:
                 print("condition true")

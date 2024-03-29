@@ -102,6 +102,16 @@ class KvizView(View):
         a = request.session['quiz_start_time'] = start_time_str
         print(a)
 
+        quiz_result = QuizResult.objects.create(
+            user=request.user,
+            percent=0,
+            score=0,
+            time=0,
+            django_time=0,
+            date_taken=tz.now() + timedelta(hours=1)
+        )
+        request.session['quiz_result_id'] = quiz_result.id
+
         all_questions = list(Question.objects.all())
         questions = random.sample(all_questions, k=min(len(all_questions), 2))  # Adjust the number of questions as needed
         context = {'questions': questions}
@@ -151,7 +161,9 @@ class KvizView(View):
             'percent': percent,
             'total': total
             }
-        
+        hint_button_clicked = request.POST.get("hintButtonClickCount")
+        print(hint_button_clicked)
+        time_taken_seconds = time_taken_seconds + int(hint_button_clicked)*5
         if (time_taken_seconds - 10) < int(context["time"]) < (time_taken_seconds + 10):
             if percent > 83:
                 context["coords"] = coords
@@ -159,7 +171,7 @@ class KvizView(View):
                 # time zone +1 hour
                 twenty_four_hours_ago = tz.now() + timedelta(hours=1) - timedelta(hours=24)
                 recent_attempts = QuizResult.objects.filter(user=request.user.id, date_taken__gte=twenty_four_hours_ago)
-                if len(recent_attempts) < 1:
+                if len(recent_attempts) < 2:
                     expected_token = generate_token()
                     request.session['expected_token'] = expected_token
                     context['expected_token'] = expected_token
@@ -173,14 +185,27 @@ class KvizView(View):
             context["error_time_message"] = "Hodnota času serveru neodpovídá povolené odchylce časovače!"
 
         date_taken = tz.now() + timedelta(hours=1)
-        quiz_result = QuizResult(
-            user=request.user, 
-            percent=percent, 
-            score=score, 
-            time=context["time"], 
-            django_time=time_taken_seconds, 
-            date_taken=date_taken)
+
+        quiz_result_id = request.session.get('quiz_result_id')
+        quiz_result = QuizResult.objects.get(id=quiz_result_id)
+
+        # Update the quiz result object with the actual quiz results
+        quiz_result.percent = percent
+        quiz_result.score = score  # Your logic to calculate score
+        quiz_result.time = request.POST.get('timer')  # Assuming timer is submitted with the form
+        quiz_result.django_time = time_taken_seconds  # Your logic to calculate Django time
+        quiz_result.date_taken = tz.now() + timedelta(hours=1)  # Update the date taken
+
+        # Save the updated quiz result object
         quiz_result.save()
+        # quiz_result = QuizResult(
+        #     user=request.user, 
+        #     percent=percent, 
+        #     score=score, 
+        #     time=context["time"], 
+        #     django_time=time_taken_seconds, 
+        #     date_taken=date_taken)
+        # quiz_result.save()
 
         session_key = request.GET.get('token')
         if session_key:

@@ -7,9 +7,14 @@ from django.core.exceptions import ValidationError
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(label="E-mail", widget=forms.EmailInput(attrs={"class":"form-control"}))
 
+
     class Meta:
         model = User
         fields = ("username", "email", "password1", "password2")
+
+        labels = {
+        "username": "Geopřezdívka"
+        }
 
 
     def __init__(self, *args, **kwargs):
@@ -28,18 +33,22 @@ class SignUpForm(UserCreationForm):
 
 
 class LoginForm(AuthenticationForm):
-    username = UsernameField(label='Uživatelské jméno', widget=forms.TextInput(attrs={'class':'form-control'}))
-    password = forms.CharField(label="Heslo", widget=forms.PasswordInput(attrs={"autocomplete": "current-password", 'class':'form-control'}),
-    )
+    username = UsernameField(label='Geopřezdívka', widget=forms.TextInput(attrs={'class':'form-control'}))
+    password = forms.CharField(label="Heslo", widget=forms.PasswordInput(attrs={"autocomplete": "current-password", 'class':'form-control'}))
+
+        # vycházím ze zdrojového kódu pro Django na Githubu
+    error_messages = {
+        "invalid_login": "Zadej správné uživatelské jméno a heslo. Pozor na velká a malá písmena."
+     }
 
     class Meta:
         model = User
         fields = "__all__"
+        labels = {
+            "username": "Geopřezdívka"
+        }
     
-    # vycházím ze zdrojového kódu pro Django na Githubu
-    error_messages = {
-        "invalid_login": "Zadej správné uživatelské jméno a heslo. Pozor na velká a malá písmena."
-     }
+
 
 
 class ResetPasswordForm(SetPasswordForm):
