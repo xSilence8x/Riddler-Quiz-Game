@@ -17,5 +17,15 @@ class QuizResultAdmin(admin.ModelAdmin):
     get_quiz_result.short_description = "Výsledky kvízu"
     date_taken_display.short_description = "Datum kvízu"
 
-admin.site.register(Question)
+
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ["question"]
+
+    def get_question_name(self, obj):
+        return str(obj.question)
+    
+    get_question_name.short_description = "Otázky"
+
+
+admin.site.register(Question, QuestionAdmin)
 admin.site.register(QuizResult, QuizResultAdmin)

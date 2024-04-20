@@ -7,15 +7,17 @@ Přihlášení
 
 {% block content %}
     <div id="intro-container">
-    <h1>Přihlásit do kvízu</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Přihlásit</button>
-    </form>
-    <p>
-        Zapomněl jsi heslo? <br>
-        <a href="{% url 'password_reset' %}">Obnovit zde.</a>
-    </p>
+        <h1>Přihlásit do kvízu</h1>
+        <div class="form-login">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Přihlásit</button>
+            </form>
+        </div>
+        <p>
+            Zapomněl jsi heslo? <br>
+            <a href="{% url 'password_reset' %}">Obnovit zde.</a>
+        </p>
 </div>
 {% endblock %}

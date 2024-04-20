@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField, SetPasswordForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField, SetPasswordForm, PasswordResetForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
@@ -16,6 +16,10 @@ class SignUpForm(UserCreationForm):
         "username": "Geopřezdívka"
         }
 
+        help_texts = {
+            "username": "<ul><li>Pouze písmena, číslice a znaky @/./+/-/_</li></ul>",
+        }
+
 
     def __init__(self, *args, **kwargs):
         super(SignUpForm, self).__init__(*args, **kwargs)
@@ -23,6 +27,7 @@ class SignUpForm(UserCreationForm):
         self.fields["username"].widget.attrs["class"] = "form-control"
         self.fields["password1"].widget.attrs["class"] = "form-control"
         self.fields["password2"].widget.attrs["class"] = "form-control"
+        self.fields["password2"].help_text = ""
     
 
     def clean(self):
@@ -47,9 +52,11 @@ class LoginForm(AuthenticationForm):
         labels = {
             "username": "Geopřezdívka"
         }
-    
-
 
 
 class ResetPasswordForm(SetPasswordForm):
     pass
+
+
+class CustomPasswordResetForm(PasswordResetForm):
+    email = forms.EmailField(label="E-mail", widget=forms.EmailInput(attrs={"class":"form-control"}))

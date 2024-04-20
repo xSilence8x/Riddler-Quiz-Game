@@ -85,3 +85,57 @@ button:hover {
     align-content: flex-end;
     margin-bottom: 20px;
 }
+
+.form-control {
+    display: block;
+    padding: 0.375rem 0.75rem;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-login {
+    display: grid;
+    text-align: left;
+    justify-content: space-around;
+    justify-items: center;
+}
+
+.form-login p label {
+    display: left;
+}
+
+.form-login p input {
+    display: grid;
+}
+
+.form-login form button {
+    display: block;
+    margin: 0 auto;
+}
+
+.form-login form li {
+    list-style-type: none;
+    font-size: 0.875em;
+}
+
+.errorlist {
+    background-color: #f8d7da;
+    color: red;
+    border-radius: 0.375rem;
+    padding: 0.375rem;
+
+
+
+}

@@ -11,7 +11,7 @@ Kvíz
 
     <div class="container ">
     
-    <div align="right " id="displaytimer"><b>Timer: 0 seconds</b></div>
+    <div align="right " id="displaytimer"><b>Časovač: 04:00</b></div>
     
     <form id="quizForm" method='post' action=''>
         {% csrf_token %}
@@ -19,7 +19,7 @@ Kvíz
         <div class="question{% if forloop.first %} active{% endif %}" id="question_{{ q.id }}">
             <div class="form-group">
                 <div align="right ">
-                    <p>Otázka {{ forloop.counter }}/{{questions|length}}</p>
+                    <p><b>Otázka {{ forloop.counter }}/{{questions|length}}</b></p>
                 </div>
                 <label for="user_answer_{{ q.id }}">{{ q.question }}</label>
                 <input type="text" id="user_answer_{{ q.id }}" name="user_answer_{{ q.id }}" class="form-control" required autocomplete="off">
@@ -44,14 +44,6 @@ Kvíz
     </div>
     {% block script %}
         <script>
-            {% comment %} window.onbeforeunload = function() {
-                // Set expected_token session key to None
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", "{% url 'invalid_token' %}", true);
-                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
-                xhr.send();
-            }; {% endcomment %}
-            
             let hintButtonClickCount = 0;
             var clickCount = document.getElementById("hintButtonClickCount")
             clickCount.value = hintButtonClickCount;
@@ -81,7 +73,7 @@ Kvíz
                 }
                 document.querySelectorAll('.showHintBtn').forEach(function(button) {
                     button.addEventListener('click', function() {
-                        t+=5;
+                        t-=5;
                         hintButtonClickCount++;
                         clickCount.value = hintButtonClickCount;
                         var questionId = this.getAttribute('data-question-id');
@@ -118,18 +110,21 @@ Kvíz
             const timer=document.getElementById('displaytimer')
             const inputtag = document.getElementById('timer')
 
-            t=0
+            t = 240;
             setInterval(()=>{
-                t+=1
-                timer.innerHTML ="<b>Timer: " +t+" seconds</b>"
-                inputtag.value = t
+                var minutes = Math.floor(t / 60);
+                var seconds = t % 60;
 
-                if (t > 240) {
+                var formattedTime = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+
+                t-=1
+                timer.innerHTML ="<b>Časovač: " + formattedTime + " </b>";
+                inputtag.value = t;
+
+                if (t < 0) {
                     document.getElementById("quizForm").submit();
                 }
             },1000)
-        
-
         </script>
     {% endblock script %}
     
