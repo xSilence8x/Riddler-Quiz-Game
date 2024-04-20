@@ -18,6 +18,9 @@ Kvíz
         {% for q in questions %}
         <div class="question{% if forloop.first %} active{% endif %}" id="question_{{ q.id }}">
             <div class="form-group">
+                <div align="right ">
+                    <p>Otázka {{ forloop.counter }}/{{questions|length}}</p>
+                </div>
                 <label for="user_answer_{{ q.id }}">{{ q.question }}</label>
                 <input type="text" id="user_answer_{{ q.id }}" name="user_answer_{{ q.id }}" class="form-control" required autocomplete="off">
             </div>
@@ -121,7 +124,7 @@ Kvíz
                 timer.innerHTML ="<b>Timer: " +t+" seconds</b>"
                 inputtag.value = t
 
-                if (t > 20) {
+                if (t > 240) {
                     document.getElementById("quizForm").submit();
                 }
             },1000)

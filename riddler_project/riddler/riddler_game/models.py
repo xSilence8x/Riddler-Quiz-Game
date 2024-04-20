@@ -14,7 +14,7 @@ class Question(models.Model):
 
 class QuizResult(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date_taken = models.DateTimeField(auto_now_add=False)
+    date_taken = models.DateTimeField()
     percent = models.IntegerField(default=0)
     score = models.IntegerField()
     time = models.IntegerField()
@@ -22,5 +22,4 @@ class QuizResult(models.Model):
     
 
     def __str__(self):
-        formatted_date_taken = self.date_taken.strftime("%Y-%m-%d, %H:%M")
-        return f"{self.user}, {self.percent} %, JS čas: {self.time} s, Django čas: {self.django_time}, {formatted_date_taken}"
+        return f"{self.user}, {self.percent} %, JS čas: {self.time} s, Django čas: {self.django_time}"

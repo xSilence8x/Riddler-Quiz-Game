@@ -13,6 +13,7 @@ from django.contrib.sessions.models import Session
 from django.utils import timezone as tz
 from django.contrib.auth.forms import PasswordResetForm
 from datetime import datetime, timedelta, timezone
+from .utils.helpers import get_actual_time
 
 
 class HomeView(View):
@@ -22,10 +23,12 @@ class HomeView(View):
         context = {"context":"context"}
 
         # testing
-        two_min_ago = tz.now() + timedelta(hours=1) - timedelta(minutes=4)
-        print(f"now {tz.now()}, 2 mn ago {two_min_ago}")
+        actual_local_time = get_actual_time()
+        two_min_ago = actual_local_time - timedelta(minutes=2)
+        print(f"now {actual_local_time}, 2 mn ago {two_min_ago}")
 
         # time zone +1 hour
+        # TODO actual time!!!
         twenty_four_hours_ago = tz.now() + timedelta(hours=1) - timedelta(hours=24)
 
         # change from two_min_ago to desired time
@@ -94,13 +97,19 @@ class KvizView(View):
             return render(request, "invalid_token.html")
         
         start_time = datetime.now()
-        my_timezone = timezone(timedelta(hours=1))
-        start_time = start_time.astimezone(my_timezone)
+        # my_timezone = timezone(timedelta(hours=1))
+        # start_time = start_time.astimezone(my_timezone)
+
+        # Here set your local time, e.g. Prague
+        current_time = tz.now()
+        current_tz = tz.get_current_timezone()
+        local_tz_time = current_time.astimezone(current_tz)
 
         # start_timezone = timezone.now()
-        start_time_str = start_time.strftime("%Y-%m-%d %H:%M:%S")
+        # start_time_str = start_time.strftime("%Y-%m-%d %H:%M:%S")
+        start_time_str = local_tz_time.strftime("%Y-%m-%d %H:%M:%S")
         a = request.session['quiz_start_time'] = start_time_str
-        print(a)
+        print(f"toto ukládm do session, radek 109, {a}")
 
         quiz_result = QuizResult.objects.create(
             user=request.user,
@@ -108,12 +117,12 @@ class KvizView(View):
             score=0,
             time=0,
             django_time=0,
-            date_taken=tz.now() + timedelta(hours=1)
+            date_taken= local_tz_time #tz.now() + timedelta(hours=1)
         )
         request.session['quiz_result_id'] = quiz_result.id
 
         all_questions = list(Question.objects.all())
-        questions = random.sample(all_questions, k=min(len(all_questions), 2))  # Adjust the number of questions as needed
+        questions = random.sample(all_questions, k=min(len(all_questions), 3))  # Adjust the number of questions as needed
         context = {'questions': questions}
 
         expected_token = generate_token()
@@ -169,7 +178,12 @@ class KvizView(View):
                 context["coords"] = coords
             else:
                 # time zone +1 hour
-                twenty_four_hours_ago = tz.now() + timedelta(hours=1) - timedelta(hours=24)
+                current_time = tz.now()
+                current_tz = tz.get_current_timezone()
+                local_tz_time = current_time.astimezone(current_tz)
+
+                twenty_four_hours_ago = local_tz_time - timedelta(hours=24)
+                print(f"blokace pristupu na 24 h, radek 183, {twenty_four_hours_ago}")
                 recent_attempts = QuizResult.objects.filter(user=request.user.id, date_taken__gte=twenty_four_hours_ago)
                 if len(recent_attempts) < 2:
                     expected_token = generate_token()
@@ -184,17 +198,24 @@ class KvizView(View):
             request.session['timer_tampering_attempt'] = time_now_str
             context["error_time_message"] = "Hodnota času serveru neodpovídá povolené odchylce časovače!"
 
-        date_taken = tz.now() + timedelta(hours=1)
+        
 
         quiz_result_id = request.session.get('quiz_result_id')
         quiz_result = QuizResult.objects.get(id=quiz_result_id)
+
+        # Here set your local time, e.g. Prague
+        current_time = tz.now() # datetime.datetime(2024, 4, 20, 12, 24, 49, 148401, tzinfo=datetime.timezone.utc)
+        current_tz = tz.get_current_timezone() # zoneinfo.ZoneInfo(key='Europe/Prague')
+        local_tz_time = current_time.astimezone(current_tz) # datetime.datetime(2024, 4, 20, 14, 24, 49, 148401, tzinfo=zoneinfo.ZoneInfo(key='Europe/Prague'))
+
+        print(f"locat tz time {local_tz_time}")
 
         # Update the quiz result object with the actual quiz results
         quiz_result.percent = percent
         quiz_result.score = score  # Your logic to calculate score
         quiz_result.time = request.POST.get('timer')  # Assuming timer is submitted with the form
         quiz_result.django_time = time_taken_seconds  # Your logic to calculate Django time
-        quiz_result.date_taken = tz.now() + timedelta(hours=1)  # Update the date taken
+        quiz_result.date_taken = local_tz_time #tz.now() + timedelta(hours=2)  Update the date taken
 
         # Save the updated quiz result object
         quiz_result.save()
