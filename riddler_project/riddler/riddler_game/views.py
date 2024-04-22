@@ -156,10 +156,11 @@ class KvizView(View):
             else:
                 wrong += 1
 
+        # time! 240-int(..)
         percent = score / (total * 10) * 100
         context = {
             'score': score,
-            'time': 240-int(request.POST.get('timer')),
+            'time': 3600-int(request.POST.get('timer')),
             'correct': correct,
             'wrong': wrong,
             'percent': percent,
@@ -203,7 +204,8 @@ class KvizView(View):
         # Update the quiz result object with the actual quiz results
         quiz_result.percent = percent
         quiz_result.score = score  # Your logic to calculate score
-        quiz_result.time = 240-int(request.POST.get('timer'))  # Assuming timer is submitted with the form
+        # time! 240-int(..)
+        quiz_result.time = 3600-int(request.POST.get('timer'))  # Assuming timer is submitted with the form
         quiz_result.django_time = time_taken_seconds  # Your logic to calculate Django time
         quiz_result.date_taken = local_tz_time
 
