@@ -71,6 +71,10 @@ button:hover {
     border-radius: 0 10px 10px 0;
 }
 
+.container {
+    width: 50%;
+}
+
 .question {
     display: flex; 
     flex-wrap: wrap; 
