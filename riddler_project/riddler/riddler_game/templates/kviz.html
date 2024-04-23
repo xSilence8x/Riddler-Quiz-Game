@@ -9,42 +9,46 @@ Kvíz
 {% block content %}   
 {% if user.is_authenticated%}    
 
-    <div class="container ">
-    
-    <div align="right " id="displaytimer"><b>Časovač: 04:00</b></div>
+    <div class="container" id="intro-container">
+
+    <div align="right" id="displaytimer"><b>Časovač: 04:00</b></div>
     
     <form id="quizForm" method='post' action=''>
         {% csrf_token %}
         {% for q in questions %}
         <div class="question{% if forloop.first %} active{% endif %}" id="question_{{ q.id }}">
             <div class="form-group">
-                <div align="right ">
-                    <p><b>Otázka {{ forloop.counter }}/{{questions|length}}</b></p>
+                <div class="timer">
+                    <b>Otázka {{ forloop.counter }}/{{questions|length}}</b>
                 </div>
                 <label for="user_answer_{{ q.id }}">{{ q.question }}</label>
-                <div>
-                    <input type="text" id="user_answer_{{ q.id }}" name="user_answer_{{ q.id }}" class="form-control" required autocomplete="off">
-                    <button type="button" class="showHintBtn" data-question-id="{{ q.id }}">Nápověda</button>
+                <div class="hint">
+                    <div>
+                        <input type="text" id="user_answer_{{ q.id }}" name="user_answer_{{ q.id }}" class="form-control" required autocomplete="off">
+                    </div>
+                    <div style="display: flex; margin-left: 20px;">
+                        <div class="hint-answer" id="hint_{{ q.id }}" style="display: none;">{{ q.hint }}</div>
+                        <button type="button" class="showHintBtn" title="nápověda" data-question-id="{{ q.id }}">?</button>
+                        
+                    </div>
                 </div>
             </div>
-        
             
-            <div class="hint" id="hint_{{ q.id }}" style="display: none;">{{ q.hint }}</div>
-            <br>
+                
+
         </div>
         {% endfor %}
-        <br>
+            
         <input id='timer' type='hidden' name="timer" value="">
         <input id='hintButtonClickCount' type='hidden' name="hintButtonClickCount" value="">
-        <br>
-        <button type="button" class="btn btn-primary" id="nextButton">Další hádanka</button>
-        <button type="submit" class="btn btn-primary" id="submitButton" style="display: none;">Poslat odpovědi</button>
+        <button type="button" class="btn" id="nextButton">Další hádanka</button>
+        <button type="submit" class="btn" id="submitButton" style="display: none;">Poslat odpovědi</button>
     </form>
-    <div class="container">
-        <p>
-            <a href="{% url 'home' %}">Ukončit kvíz</a>
-        </p>
-    </div>
+
+    <div class="quit">
+        <a href="{% url 'home' %}">Ukončit kvíz</a>
+    </div>  
+    
     {% block script %}
         <script>
             let hintButtonClickCount = 0;

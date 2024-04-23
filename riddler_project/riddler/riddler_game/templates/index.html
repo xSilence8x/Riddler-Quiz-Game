@@ -10,8 +10,10 @@ Kvíz
 <div id="intro-container">
     <h1>Vítejte v kvízu!</h1>
     <p style="font-size: 20px;">
-        Dostaneš časově omezených 12 hádanek a pouze 2 pokusy. <br>
-        U každé hádanky je možnost nápovědy. Ovšem pozor! Při kliknutí na ni přijdeš o 5 vteřin svého času. <br>
+        Dostaneš 12 hádanek časově omezených a pouze 2 pokusy. <br>
+        Na celou hru máš 4 minuty.<br>
+        U každé hádanky je možnost nápovědy. <br>
+        Ovšem pozor! Při kliknutí na ni přijdeš o 5 vteřin svého času. <br>
         Pro úspěšné ukončení hry musíš mít alespoň 80 %. <br>
         Po absolvování této hranice dostaneš za odměnu finální souřadnice.
     </p>
@@ -31,7 +33,7 @@ Kvíz
     </p>
     <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
-        <button type="submit" class="nav-link text-light">Odhlásit</button>
+        <button type="submit">Odhlásit</button>
     </form>
         {% if timer_tamper_message %}
             <p>
