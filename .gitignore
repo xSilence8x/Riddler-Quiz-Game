@@ -1,4 +1,5 @@
 env/
-eKnihy/__pycache__/
-knihy/__pycache__/
+riddler_game/__pycache__/
 __pycache__/
+settings.py
+db.sqlite3
