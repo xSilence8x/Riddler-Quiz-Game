@@ -55,7 +55,11 @@ class LoginForm(AuthenticationForm):
 
 
 class ResetPasswordForm(SetPasswordForm):
-    pass
+    def __init__(self, *args, **kwargs):
+        super(ResetPasswordForm, self).__init__(*args, **kwargs)
+
+        self.fields["new_password1"].widget.attrs["class"] = "form-control"
+        self.fields["new_password2"].widget.attrs["class"] = "form-control"
 
 
 class CustomPasswordResetForm(PasswordResetForm):
