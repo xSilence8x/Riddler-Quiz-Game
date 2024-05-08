@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
-from .forms import SignUpForm, LoginForm, CustomPasswordResetForm
+from .forms import SignUpForm, LoginForm, CustomPasswordResetForm, ResetPasswordForm
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.contrib.auth.forms import SetPasswordForm
 from django.views import generic
@@ -25,17 +25,17 @@ class HomeView(View):
         # testing
         actual_local_time = get_actual_time()
         two_min_ago = actual_local_time - timedelta(minutes=2)
-        print(f"now {actual_local_time}, 2 mn ago {two_min_ago}")
+        # print(f"now {actual_local_time}, 2 mn ago {two_min_ago}")
 
         # time zone +1 hour
         # TODO actual time!!!
-        twenty_four_hours_ago = tz.now() + timedelta(hours=1) - timedelta(hours=24)
+        twenty_four_hours_ago = actual_local_time - timedelta(hours=24)
 
         # change from two_min_ago to desired time
-        recent_attempts = QuizResult.objects.filter(user=request.user.id, date_taken__gte=two_min_ago)
-        last_quiz_taken = QuizResult.objects.filter(user=request.user.id, date_taken__gte=two_min_ago)
+        recent_attempts = QuizResult.objects.filter(user=request.user.id, date_taken__gte=twenty_four_hours_ago)
+        last_quiz_taken = QuizResult.objects.filter(user=request.user.id, date_taken__gte=twenty_four_hours_ago)
         successful_attempt = QuizResult.objects.filter(user=request.user.id, percent__gte=80)
-        print(last_quiz_taken)
+        # print(last_quiz_taken)
         if last_quiz_taken:
             last_quiz_takenn = last_quiz_taken.order_by("-date_taken")
             js_time = last_quiz_takenn[0].time
@@ -61,7 +61,7 @@ class HomeView(View):
 class UserRegisterView(generic.CreateView):
     form_class = SignUpForm
     template_name = "registration/register.html"
-    success_url = reverse_lazy("login")
+    success_url = reverse_lazy("register-ok")
 
 
 class UserLoginView(LoginView):
@@ -83,13 +83,17 @@ class CustomPasswordResetDoneView(PasswordResetDoneView):
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
     template_name = "registration/password_reset_confirm.html"
-    form_class = SetPasswordForm
+    form_class = ResetPasswordForm
     success_url = reverse_lazy('password_reset_complete')
 
 
 class CustomPasswordResetCompleteView(PasswordResetCompleteView):
     template_name = "registration/password_reset_complete.html"
-    
+
+
+def redirect_view(request):
+    return render(request, "register_successful.html")
+
 
 def generate_token():
     return str(uuid.uuid4())
@@ -106,7 +110,7 @@ class KvizView(View):
 
         start_time_str = local_tz_time.strftime("%Y-%m-%d %H:%M:%S")
         a = request.session['quiz_start_time'] = start_time_str
-        print(f"toto ukládm do session, radek 109, {a}")
+        # print(f"toto ukládm do session, radek 109, {a}")
 
         quiz_result = QuizResult.objects.create(
             user=request.user,
@@ -119,7 +123,7 @@ class KvizView(View):
         request.session['quiz_result_id'] = quiz_result.id
 
         all_questions = list(Question.objects.all())
-        questions = random.sample(all_questions, k=min(len(all_questions), 3))  # Adjust the number of questions as needed
+        questions = random.sample(all_questions, k=min(len(all_questions), 12))  # Adjust the number of questions as needed
         context = {'questions': questions}
 
         expected_token = generate_token()
@@ -160,7 +164,7 @@ class KvizView(View):
         percent = score / (total * 10) * 100
         context = {
             'score': score,
-            'time': 3600-int(request.POST.get('timer')),
+            'time': 240-int(request.POST.get('timer')),
             'correct': correct,
             'wrong': wrong,
             'percent': percent,
@@ -168,7 +172,7 @@ class KvizView(View):
             }
         
         hint_button_clicked = request.POST.get("hintButtonClickCount")
-        print(hint_button_clicked)
+        # print(hint_button_clicked)
         time_taken_seconds = time_taken_seconds + int(hint_button_clicked)*5
         if (time_taken_seconds - 10) < int(context["time"]) < (time_taken_seconds + 10):
             if percent > 83:
@@ -177,7 +181,7 @@ class KvizView(View):
                 local_tz_time = get_actual_time()
 
                 twenty_four_hours_ago = local_tz_time - timedelta(hours=24)
-                print(f"blokace pristupu na 24 h, radek 183, {twenty_four_hours_ago}")
+                # print(f"blokace pristupu na 24 h, radek 183, {twenty_four_hours_ago}")
                 recent_attempts = QuizResult.objects.filter(user=request.user.id, date_taken__gte=twenty_four_hours_ago)
                 if len(recent_attempts) < 2:
                     expected_token = generate_token()
@@ -199,13 +203,13 @@ class KvizView(View):
         # Here set your local time, e.g. Prague
         local_tz_time = get_actual_time()
 
-        print(f"locat tz time {local_tz_time}")
+        # print(f"locat tz time {local_tz_time}")
 
         # Update the quiz result object with the actual quiz results
         quiz_result.percent = percent
         quiz_result.score = score  # Your logic to calculate score
         # time! 240-int(..)
-        quiz_result.time = 3600-int(request.POST.get('timer'))  # Assuming timer is submitted with the form
+        quiz_result.time = 240-int(request.POST.get('timer'))  # Assuming timer is submitted with the form
         quiz_result.django_time = time_taken_seconds  # Your logic to calculate Django time
         quiz_result.date_taken = local_tz_time
 
@@ -216,7 +220,7 @@ class KvizView(View):
             try:
                 session = Session.objects.get(session_key=session_key)
                 session.delete()
-                print("deleted")
+                # print("deleted")
             except Session.DoesNotExist:
                 pass  # Session not found, no need to delete
 
