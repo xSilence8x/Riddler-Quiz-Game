@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% load static %}
+{% load convertor %}
 
 {% block title %}
 Výsledek
@@ -19,8 +20,8 @@ Výsledek
         <div class="card-columns">
             <div class="card">
                 <div class="card-body">
-                    <p class="card-text">Skóre: {{percent}} %</p>
-                    <p class="card-text">Čas kvízu: {{time}} s</p>
+                    <p class="card-text">Skóre: {{percent|floatformat:2}} %</p>
+                    <p class="card-text">Čas kvízu: {{time|convert_sec_to_min}} </p>
                     <p class="card-text">Správné odpovědi: {{correct}}</p>
                     <p class="card-text">Špatné odpovědi: {{wrong}}</p>
                     <p class="card-text">Celkový počet otázek: {{total}}</p>

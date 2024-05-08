@@ -22,4 +22,4 @@ class QuizResult(models.Model):
     
 
     def __str__(self):
-        return f"{self.user}, {self.percent} %, JS čas: {self.time} s, Django čas: {self.django_time}"
+        return f"{self.user}, {self.percent} %, JS čas: {self.time} s, Django čas: {round(self.django_time)} s"
