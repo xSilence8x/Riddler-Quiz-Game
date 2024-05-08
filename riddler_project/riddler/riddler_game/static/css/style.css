@@ -161,6 +161,15 @@ button:hover {
     padding: 10px 20px;
 }
 
+form li {
+    text-align: left;
+}
+
+form ul {
+    width: 55%;
+    margin: 0 auto;
+}
+
 .form-group {
     display: flex;
     flex-wrap: wrap;
