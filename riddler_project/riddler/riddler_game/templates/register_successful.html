@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+Úspěšná registrace
+{% endblock %}
+
+{% block content %}
+<div id="intro-container">
+    <h2>Registrace proběhla v pořádku.</h2>
+    <p>Nyní budeš přesměrován k přihlášení.</p>
+</div>
+
+<script>
+    function redirectLogin() {
+        setTimeout(function() {
+            window.location.href = "{% url 'login' %}";
+        }, 7000);
+    }
+
+    window.onload = function() {
+        redirectLogin();
+    };
+
+</script>
+{% endblock %}

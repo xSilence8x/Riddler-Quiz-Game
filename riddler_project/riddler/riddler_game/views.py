@@ -61,7 +61,7 @@ class HomeView(View):
 class UserRegisterView(generic.CreateView):
     form_class = SignUpForm
     template_name = "registration/register.html"
-    success_url = reverse_lazy("login")
+    success_url = reverse_lazy("register-ok")
 
 
 class UserLoginView(LoginView):
@@ -89,6 +89,10 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
 
 class CustomPasswordResetCompleteView(PasswordResetCompleteView):
     template_name = "registration/password_reset_complete.html"
+
+
+def redirect_view(request):
+    return render(request, "register_successful.html")
 
 
 def generate_token():
