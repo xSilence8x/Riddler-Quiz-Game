@@ -5,6 +5,9 @@ from django.core.exceptions import ValidationError
 
 
 class SignUpForm(UserCreationForm):
+    """
+    SignUpForm modifies Django-built UserCreationForm so that we can use our custom labels and add HTML class.
+    """
     email = forms.EmailField(label="E-mail", widget=forms.EmailInput(attrs={"class":"form-control"}))
 
 
@@ -31,6 +34,9 @@ class SignUpForm(UserCreationForm):
     
 
     def clean(self):
+        """
+        Every registration process checks if e-mail address already exists. 
+        """
         email = self.cleaned_data.get("email")
         if User.objects.filter(email=email).exists():
             raise ValidationError(f"Tento email {email} už je zaregistrován.")
@@ -38,6 +44,9 @@ class SignUpForm(UserCreationForm):
 
 
 class LoginForm(AuthenticationForm):
+    """
+    LoginForm modifies Django-built AuthenticationForm so that we can use our custom labels and add HTML class.
+    """
     username = UsernameField(label='Geopřezdívka', widget=forms.TextInput(attrs={'class':'form-control'}))
     password = forms.CharField(label="Heslo", widget=forms.PasswordInput(attrs={"autocomplete": "current-password", 'class':'form-control'}))
 

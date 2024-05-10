@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class Question(models.Model):
+    """
+    Every question in the quiz consists of question, right answer and hint.
+    """
     question = models.TextField(max_length=250)
     answer = models.CharField(max_length=50)
     hint = models.CharField(max_length=50)
@@ -13,6 +16,9 @@ class Question(models.Model):
 
 
 class QuizResult(models.Model):
+    """
+    Every quiz that user takes saves data to database. 
+    We collect username, date of quiz taken, percent and score, JS and Django elapsed time for comparison."""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date_taken = models.DateTimeField()
     percent = models.IntegerField(default=0)

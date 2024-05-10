@@ -22,24 +22,26 @@ class HomeView(View):
     def get(self, request, *args, **kwargs):
         context = {"context":"context"}
 
-        # testing
+        # testing - for testing purpose restrictions are for 2 minutes.
         actual_local_time = get_actual_time()
         two_min_ago = actual_local_time - timedelta(minutes=2)
-        # print(f"now {actual_local_time}, 2 mn ago {two_min_ago}")
 
         # time zone +1 hour
-        # TODO actual time!!!
         twenty_four_hours_ago = actual_local_time - timedelta(hours=24)
 
         # change from two_min_ago to desired time
+        # recent_attempts = how many times user played the quiz in last e.g. 24 hours
         recent_attempts = QuizResult.objects.filter(user=request.user.id, date_taken__gte=twenty_four_hours_ago)
+        # last_quiz_taken is used for detecting elapsed time of last quiz
         last_quiz_taken = QuizResult.objects.filter(user=request.user.id, date_taken__gte=twenty_four_hours_ago)
+        # successful_attempt checks if user scored more than 80 % ever
         successful_attempt = QuizResult.objects.filter(user=request.user.id, percent__gte=80)
-        # print(last_quiz_taken)
+
         if last_quiz_taken:
             last_quiz_takenn = last_quiz_taken.order_by("-date_taken")
             js_time = last_quiz_takenn[0].time
             django_time = last_quiz_takenn[0].django_time
+            # detect if user manipulated timer by comparing JavaScript and Django time
             subtraction = abs(django_time - js_time) 
             if subtraction > 10:
                 context["timer_tamper_message"] = "Zablokovaný přístup na 24 hod. Zásah do časovače."
@@ -96,11 +98,14 @@ def redirect_view(request):
 
 
 def generate_token():
+    """Every quiz has unique token.
+    """
     return str(uuid.uuid4())
 
 
 class KvizView(View):
     def get(self, request):
+        # compare if session token is same as URL token
         session_token = request.session.get('expected_token')
         query_token = request.GET.get('token')
         if session_token != query_token:
@@ -126,6 +131,7 @@ class KvizView(View):
         questions = random.sample(all_questions, k=min(len(all_questions), 12))  # Adjust the number of questions as needed
         context = {'questions': questions}
 
+        # generating new token prevents user from refreshing the quiz page
         expected_token = generate_token()
         request.session['expected_token'] = expected_token
 
@@ -152,8 +158,7 @@ class KvizView(View):
             total += 1
             user_answer = request.POST.get('user_answer_' + str(q.id), "").lower()
             correct_answer = q.answer.lower()
-            print(f"user {user_answer}, q.question {q.id}, correct {correct_answer}")
-
+            
             if correct_answer == user_answer:
                 score += 10
                 correct += 1
@@ -172,10 +177,9 @@ class KvizView(View):
             }
         
         hint_button_clicked = request.POST.get("hintButtonClickCount")
-        # print(hint_button_clicked)
         time_taken_seconds = time_taken_seconds + int(hint_button_clicked)*5
         if (time_taken_seconds - 10) < int(context["time"]) < (time_taken_seconds + 10):
-            if percent > 83:
+            if percent >= 80:
                 context["coords"] = coords
             else:
                 local_tz_time = get_actual_time()
