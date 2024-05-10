@@ -19,6 +19,9 @@ https://marwen.pythonanywhere.com
 
 ![image](https://github.com/xSilence8x/Riddler-Quiz-Game/assets/50072173/230d4974-c14f-41e4-90a4-1326ab22a4dc)
 
+![image](https://github.com/xSilence8x/Riddler-Quiz-Game/assets/50072173/be14cc4e-aed9-469d-9062-b0fa3f9a5ede)
+
+
 
 
 ## About Authors
