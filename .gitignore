@@ -4,3 +4,4 @@ __pycache__/
 riddler_project/riddler/riddler/settings.py
 riddler_project/riddler/db.sqlite3
 data_for_riddler
+riddler_project/riddler/sent_emails/
