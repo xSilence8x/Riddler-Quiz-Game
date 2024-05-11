@@ -17,9 +17,10 @@ requirements.txt
 ## Quiz is Alive! (Only in Czech)
 https://marwen.pythonanywhere.com
 
-![image](https://github.com/xSilence8x/Riddler-Quiz-Game/assets/50072173/230d4974-c14f-41e4-90a4-1326ab22a4dc)
+![image](https://github.com/xSilence8x/Riddler-Quiz-Game/assets/50072173/49919df4-1eff-48af-8662-06141a9f0f69)
 
-![image](https://github.com/xSilence8x/Riddler-Quiz-Game/assets/50072173/be14cc4e-aed9-469d-9062-b0fa3f9a5ede)
+![image](https://github.com/xSilence8x/Riddler-Quiz-Game/assets/50072173/cadcf838-3570-457b-ab91-878a2af2b5c5)
+
 
 
 
