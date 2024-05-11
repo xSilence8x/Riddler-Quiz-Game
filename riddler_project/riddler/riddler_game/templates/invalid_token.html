@@ -7,9 +7,11 @@ Neplatný token
 {% endblock %}
 
 {% block content %} 
-<p>
-    Neplatný token. Nepodváděj. <br>
-    Vrať se na <a href="{% url 'home' %}">hlavní stránku</a>.
-</p>
+<div id="intro-container">
+    <p>
+        Neplatný token. Nepodváděj. <br>
+        Vrať se na <a href="{% url 'home' %}">hlavní stránku</a>.
+    </p>
+</div>
 
 {% endblock %}
